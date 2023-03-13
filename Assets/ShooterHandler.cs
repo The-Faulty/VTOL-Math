@@ -8,36 +8,143 @@ public class ShooterHandler : MonoBehaviour
 {
   public Transform idlePoint;
   public Transform alignPoint;
-  public NavMeshAgent agent;
-  public Button button;
+  public Transform playerTarget;
+  public Transform gameTarget;
+  public Transform agent;
+
+  public NavMeshAgent navAgent;
+
+  public Button AlignButton;
+  public Button LaunchBarButton;
+  public Button EngineButton;
+
+  public Text indicator;
 
   private bool isIdle = true;
+  private bool bar = false;
+  private bool engines = false;
 
+  private enum PlayerState
+  {
+    None,
+    Taxi,
+    LaunchBar,
+    Hooked,
+    Runup,
+    Launch
+  }
+
+  PlayerState state;
   // Start is called before the first frame update
   void Start()
   {
-    agent.destination = idlePoint.position;
-    button.onClick.AddListener(triggered);
+    navAgent.destination = idlePoint.position;
+    AlignButton.onClick.AddListener(triggered);
+    LaunchBarButton.onClick.AddListener(BarButton);
+    EngineButton.onClick.AddListener(RunupButton);
+    state = PlayerState.None;
   }
 
+
+  
   // Update is called once per frame
   void Update()
   {
+    Vector3 lookPos;
+    Quaternion rotation;
+    switch (state)
+    {
+      case (PlayerState.Taxi):
+        if (navAgent.remainingDistance < .3)
+        {
+          lookPos = playerTarget.transform.position - agent.transform.position;
+          lookPos.y = 0;
+          rotation = Quaternion.LookRotation(lookPos);
+          agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, rotation, Time.deltaTime * 2);
+          //do alignment stuff
+          Align();
+        }
+        break;
+      case (PlayerState.LaunchBar):
+        if (bar)
+        {
+          navAgent.SetDestination(idlePoint.position);
+          state = PlayerState.Hooked;
+        }
+        break;
+      case (PlayerState.Hooked):
+        if (navAgent.remainingDistance < .3)
+        {
+          indicator.text = "Engines";
+          state = PlayerState.Runup;          
+        }
+        break;
+      case (PlayerState.Runup):
+        lookPos = playerTarget.transform.position - agent.transform.position;
+        lookPos.y = 0;
+        rotation = Quaternion.LookRotation(lookPos);
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, rotation, Time.deltaTime * 2);
+        if (engines)
+        {
+          state = PlayerState.Launch;
+          indicator.text = "Launch";
+        }
+        break;
+    }
+  }
 
+  void Align()
+  {
+    float relativeAngle = Vector2.SignedAngle(new Vector2(gameTarget.forward.x, gameTarget.forward.z), new Vector2((gameTarget.position - playerTarget.position).x, (gameTarget.position - playerTarget.position).z));
+    if (relativeAngle > 5)
+    {
+      indicator.text = "Left";
+    }
+    else if (relativeAngle < -5)
+    {
+      indicator.text = "Right";
+    }
+    else
+    {
+      indicator.text = "Forward";
+    }
+    if ((gameTarget.transform.position - playerTarget.transform.position).sqrMagnitude < 0.36 && Vector3.Dot(playerTarget.transform.forward, gameTarget.forward) > 0.5f)
+    {
+      indicator.text = "Bar";
+      state = PlayerState.LaunchBar;
+    }
   }
 
   void triggered()
   {
     if (isIdle)
     {
-      button.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Stop Align";
-      agent.destination = alignPoint.position;
-      isIdle = !isIdle;
-    } else
-    {
-      button.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Start Align";
-      agent.destination = idlePoint.position;
+      AlignButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Stop Align";
+      navAgent.destination = alignPoint.position;
+      state = PlayerState.Taxi;
       isIdle = !isIdle;
     }
+    else
+    {
+      AlignButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Start Align";
+      navAgent.destination = idlePoint.position;
+      state = PlayerState.None;
+      isIdle = !isIdle;
+    }
+  }
+  void BarButton()
+  {
+    bar = !bar;
+  }
+
+  void RunupButton()
+  {
+    engines = !engines;
+  }
+
+  void onHook()
+  {
+    state = PlayerState.Hooked;
+    //
   }
 }
