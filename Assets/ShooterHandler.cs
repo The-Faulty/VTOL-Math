@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class ShooterHandler : MonoBehaviour
 {
+  Animator anim;
+
   public Transform idlePoint;
   public Transform alignPoint;
   public Transform playerTarget;
@@ -23,6 +25,7 @@ public class ShooterHandler : MonoBehaviour
   private bool isIdle = true;
   private bool bar = false;
   private bool engines = false;
+  private bool isWalking = false;
 
   private enum PlayerState
   {
@@ -38,6 +41,7 @@ public class ShooterHandler : MonoBehaviour
   // Start is called before the first frame update
   void Start()
   {
+    anim = GetComponent<Animator>();
     navAgent.destination = idlePoint.position;
     AlignButton.onClick.AddListener(triggered);
     LaunchBarButton.onClick.AddListener(BarButton);
@@ -52,6 +56,24 @@ public class ShooterHandler : MonoBehaviour
   {
     Vector3 lookPos;
     Quaternion rotation;
+    print(navAgent.remainingDistance);
+    if (navAgent.remainingDistance > navAgent.radius)
+    {
+      if (!isWalking)
+      {
+        anim.SetTrigger("walk");
+        anim.ResetTrigger("idle");
+        isWalking = true;
+      }
+    } else
+    {
+      if (isWalking)
+      {
+        anim.ResetTrigger("walk");
+        anim.SetTrigger("idle");
+        isWalking = false;
+      }
+    }
     switch (state)
     {
       case (PlayerState.Taxi):
