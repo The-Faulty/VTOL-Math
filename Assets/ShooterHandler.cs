@@ -33,6 +33,7 @@ public class ShooterHandler : MonoBehaviour
     Taxi,
     LaunchBar,
     Hooked,
+    Wings,
     Runup,
     Launch
   }
