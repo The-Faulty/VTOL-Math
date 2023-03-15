@@ -667,13 +667,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="NavMeshComponents.csproj">
-      <Project>{7FCAC68A-857E-B955-3962-E95C4DA87715}</Project>
-      <Name>NavMeshComponents</Name>
-    </ProjectReference>
     <ProjectReference Include="NavMeshComponentsEditor.csproj">
       <Project>{4379D74E-F17D-C8CA-C630-D0A6F7CC422F}</Project>
       <Name>NavMeshComponentsEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="NavMeshComponents.csproj">
+      <Project>{7FCAC68A-857E-B955-3962-E95C4DA87715}</Project>
+      <Name>NavMeshComponents</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -61,16 +61,16 @@ public class ShooterHandler : MonoBehaviour
     {
       if (!isWalking)
       {
-        anim.SetTrigger("walk");
-        anim.ResetTrigger("idle");
+        anim.SetBool("walk", true);
+        anim.SetBool("idle", false);
         isWalking = true;
       }
     } else
     {
       if (isWalking)
       {
-        anim.ResetTrigger("walk");
-        anim.SetTrigger("idle");
+        anim.SetBool("walk",false);
+        anim.SetBool("idle", true);
         isWalking = false;
       }
     }
@@ -91,6 +91,7 @@ public class ShooterHandler : MonoBehaviour
         if (bar)
         {
           navAgent.SetDestination(idlePoint.position);
+          anim.SetBool("bar", false);
           state = PlayerState.Hooked;
         }
         break;
@@ -98,6 +99,7 @@ public class ShooterHandler : MonoBehaviour
         if (navAgent.remainingDistance < .3)
         {
           indicator.text = "Engines";
+          anim.SetBool("runup", true);
           state = PlayerState.Runup;          
         }
         break;
@@ -109,6 +111,8 @@ public class ShooterHandler : MonoBehaviour
         if (engines)
         {
           state = PlayerState.Launch;
+          anim.SetBool("runup", false);
+          anim.SetBool("launch", true);
           indicator.text = "Launch";
         }
         break;
@@ -121,18 +125,31 @@ public class ShooterHandler : MonoBehaviour
     if (relativeAngle > 5)
     {
       indicator.text = "Left";
+      anim.SetBool("left", true);
+      anim.SetBool("right", false);
+      anim.SetBool("forward", false);
     }
     else if (relativeAngle < -5)
     {
       indicator.text = "Right";
+      anim.SetBool("left", false);
+      anim.SetBool("right", true);
+      anim.SetBool("forward", false);
     }
     else
     {
       indicator.text = "Forward";
+      anim.SetBool("left", false);
+      anim.SetBool("right", false);
+      anim.SetBool("forward", true);
     }
     if ((gameTarget.transform.position - playerTarget.transform.position).sqrMagnitude < 0.36 && Vector3.Dot(playerTarget.transform.forward, gameTarget.forward) > 0.5f)
     {
       indicator.text = "Bar";
+      anim.SetBool("left", false);
+      anim.SetBool("right", false);
+      anim.SetBool("forward", false);
+      anim.SetBool("bar", true);
       state = PlayerState.LaunchBar;
     }
   }
