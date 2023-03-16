@@ -14,7 +14,7 @@ public class ShooterHandler : MonoBehaviour
   public Transform gameTarget;
   public Transform agent;
 
-  public NavMeshAgent navAgent;
+  public CrewNav navAgent;
 
   public Button AlignButton;
   public Button LaunchBarButton;
@@ -43,7 +43,7 @@ public class ShooterHandler : MonoBehaviour
   void Start()
   {
     anim = GetComponent<Animator>();
-    navAgent.destination = idlePoint.position;
+    navAgent.SetDestination(idlePoint.position);
     AlignButton.onClick.AddListener(triggered);
     LaunchBarButton.onClick.AddListener(BarButton);
     EngineButton.onClick.AddListener(RunupButton);
@@ -57,8 +57,7 @@ public class ShooterHandler : MonoBehaviour
   {
     Vector3 lookPos;
     Quaternion rotation;
-    print(navAgent.remainingDistance);
-    if (navAgent.remainingDistance > navAgent.radius)
+    if (navAgent.remainingDistance > .3)
     {
       if (!isWalking)
       {
@@ -160,14 +159,14 @@ public class ShooterHandler : MonoBehaviour
     if (isIdle)
     {
       AlignButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Stop Align";
-      navAgent.destination = alignPoint.position;
+      navAgent.SetDestination(alignPoint.position);
       state = PlayerState.Taxi;
       isIdle = !isIdle;
     }
     else
     {
       AlignButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Start Align";
-      navAgent.destination = idlePoint.position;
+      navAgent.SetDestination(idlePoint.position);
       state = PlayerState.None;
       isIdle = !isIdle;
     }
