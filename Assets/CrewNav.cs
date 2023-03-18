@@ -29,7 +29,7 @@ public class CrewNav : MonoBehaviour
     remainingDistance = distance;
     while (remainingDistance > 0)
     {
-      lookPos = CharacterTransform.transform.position - pos;
+      lookPos = pos - CharacterTransform.transform.position;
       lookPos.y = 0;
       rotation = Quaternion.LookRotation(lookPos);
       CharacterTransform.transform.rotation = Quaternion.Slerp(CharacterTransform.transform.rotation, rotation, Time.deltaTime * 2);
