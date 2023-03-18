@@ -162,6 +162,12 @@ public class ShooterHandler : MonoBehaviour
       navAgent.SetDestination(alignPoint.position);
       state = PlayerState.Taxi;
       isIdle = !isIdle;
+      anim.SetBool("left", false);
+      anim.SetBool("right", false);
+      anim.SetBool("forward", false);
+      anim.SetBool("bar", false);
+      anim.SetBool("runup", false);
+      anim.SetBool("launch", false);
     }
     else
     {
@@ -169,6 +175,12 @@ public class ShooterHandler : MonoBehaviour
       navAgent.SetDestination(idlePoint.position);
       state = PlayerState.None;
       isIdle = !isIdle;
+      anim.SetBool("left", false);
+      anim.SetBool("right", false);
+      anim.SetBool("forward", false);
+      anim.SetBool("bar", false);
+      anim.SetBool("runup", false);
+      anim.SetBool("launch", false);
     }
   }
   void BarButton()
