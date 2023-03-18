@@ -7,7 +7,7 @@ public class CrewNav : MonoBehaviour
   public Transform CharacterTransform;
 
   public float remainingDistance;
-  public float MoveSpeed = 2;
+  public float MoveSpeed = 1f;
 
   public CrewNav(Transform charT)
   {
@@ -21,7 +21,7 @@ public class CrewNav : MonoBehaviour
 
   private IEnumerator MoveToAsync(Vector3 pos)
   {
-    //CharacterTransform.rotation = Vector3.
+    print("Move to" + pos);
     Vector3 lookPos;
     Quaternion rotation;
     Vector3 startPos = CharacterTransform.position;
@@ -29,11 +29,11 @@ public class CrewNav : MonoBehaviour
     remainingDistance = distance;
     while (remainingDistance > 0)
     {
-      lookPos = pos - CharacterTransform.transform.position;
+      lookPos = pos - CharacterTransform.position;
       lookPos.y = 0;
       rotation = Quaternion.LookRotation(lookPos);
-      CharacterTransform.transform.rotation = Quaternion.Slerp(CharacterTransform.transform.rotation, rotation, Time.deltaTime * 2);
-      CharacterTransform.transform.position = Vector3.Lerp(startPos, pos, 1 - (remainingDistance / distance));
+      CharacterTransform.rotation = Quaternion.Slerp(CharacterTransform.rotation, rotation, Time.deltaTime * 2);
+      CharacterTransform.position = Vector3.Lerp(startPos, pos, 1 - (remainingDistance / distance));
       remainingDistance -= MoveSpeed * Time.deltaTime;
       yield return null;
     }
