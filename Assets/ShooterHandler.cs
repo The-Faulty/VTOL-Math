@@ -16,6 +16,9 @@ public class ShooterHandler : MonoBehaviour
 
   public CrewNav navAgent;
 
+  [Header("Nav Points")]
+  public GameObject[] catapults;
+
   public Button AlignButton;
   public Button LaunchBarButton;
   public Button EngineButton;
@@ -24,6 +27,7 @@ public class ShooterHandler : MonoBehaviour
 
   private bool isIdle = true;
   private bool bar = false;
+  private bool wings = false;
   private bool engines = false;
   private bool isWalking = false;
 
@@ -40,18 +44,22 @@ public class ShooterHandler : MonoBehaviour
 
   PlayerState state;
   // Start is called before the first frame update
+  [ContextMenu("Start")]
   void Start()
   {
     anim = GetComponent<Animator>();
+  }
+
+  private void OnEnable()
+  {
     navAgent.SetDestination(idlePoint.position);
-    AlignButton.onClick.AddListener(triggered);
-    LaunchBarButton.onClick.AddListener(BarButton);
-    EngineButton.onClick.AddListener(RunupButton);
+    //AlignButton.onClick.AddListener(triggered);
+    //LaunchBarButton.onClick.AddListener(BarButton);
+    //EngineButton.onClick.AddListener(RunupButton);
     state = PlayerState.None;
   }
 
-
-  
+  [ContextMenu("Update")]
   // Update is called once per frame
   void Update()
   {
@@ -65,11 +73,12 @@ public class ShooterHandler : MonoBehaviour
         anim.SetBool("idle", false);
         isWalking = true;
       }
-    } else
+    }
+    else
     {
       if (isWalking)
       {
-        anim.SetBool("walk",false);
+        anim.SetBool("walk", false);
         anim.SetBool("idle", true);
         isWalking = false;
       }
@@ -98,9 +107,17 @@ public class ShooterHandler : MonoBehaviour
       case (PlayerState.Hooked):
         if (navAgent.remainingDistance < .3)
         {
+          indicator.text = "Wings";
+          anim.SetBool("wings", true);
+          state = PlayerState.Wings;
+        }
+        break;
+      case (PlayerState.Wings):
+        if (wings)
+        {
           indicator.text = "Engines";
           anim.SetBool("runup", true);
-          state = PlayerState.Runup;          
+          state = PlayerState.Runup;
         }
         break;
       case (PlayerState.Runup):
@@ -154,11 +171,12 @@ public class ShooterHandler : MonoBehaviour
     }
   }
 
-  void triggered()
+  [ContextMenu("Trigger Align")]
+  void AlignTrigger()
   {
     if (isIdle)
     {
-      AlignButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Stop Align";
+      //AlignButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Stop Align";
       navAgent.SetDestination(alignPoint.position);
       state = PlayerState.Taxi;
       isIdle = !isIdle;
@@ -171,7 +189,7 @@ public class ShooterHandler : MonoBehaviour
     }
     else
     {
-      AlignButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Start Align";
+      //AlignButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Start Align";
       navAgent.SetDestination(idlePoint.position);
       state = PlayerState.None;
       isIdle = !isIdle;
@@ -183,19 +201,28 @@ public class ShooterHandler : MonoBehaviour
       anim.SetBool("launch", false);
     }
   }
-  void BarButton()
+
+  [ContextMenu("Bar Trigger")]
+  void BarTrigger()
   {
     bar = !bar;
   }
 
-  void RunupButton()
+  [ContextMenu("Wings")]
+  void WingTrigger()
+  {
+    wings = !wings;
+  }
+
+  [ContextMenu("Run Up")]
+  void RunUpTrigger()
   {
     engines = !engines;
   }
 
+  [ContextMenu("Hook")]
   void onHook()
   {
     state = PlayerState.Hooked;
-    //
   }
 }
